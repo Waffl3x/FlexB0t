@@ -1,0 +1,7 @@
+server~ = ''
+port~~~ = '6667'
+
+nick~~~ = ''
+pword~~ = ''
+
+channel = ''
