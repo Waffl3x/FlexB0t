@@ -2,6 +2,7 @@ from twisted.words.protocols import irc
 from twisted.internet import protocol, reactor
 #my plugin loader module
 import pluginLoader
+pL = pluginLoader
 
 #config
 #investigate use of the with statement when opening files
@@ -23,9 +24,9 @@ try:
             channel = line[11:line.rfind('\'')]
     config.close()
 except OSError as err:
-    print('Error opening configuration file: %s' % err)
+    print('Error opening configuration file: {}'.format(err))
 except NameError as err:
-    print('Configuration file missing: %s' % err)
+    print('Configuration file missing: {}'.format(err))
 
 
 class flexbot(irc.IRCClient):
@@ -37,15 +38,22 @@ class flexbot(irc.IRCClient):
         self.join(self.factory.channel)
 
     def joined(self, channel):
-        print('joined %s' % channel)
+        print('joined {}'.format(channel))
 
     def privmsg(self, user, channel, message):
-        user = user.split('!', 1)[0]
-        print('%s - %s: %s' % (channel, user, message))
+        self.username = user.split('!', 1)[0]
+        print('{} - {}: {}'.format(channel, self.username, message))
 
         if message[0] == '!':
-            for f in pluginLoader.privmsgFunc:
-                f(self, user, channel, message)
+            self.command = message.split(' ')[0]
+            self.arguments = message.split(' ')[1:]
+            #retrieve a function from the trigger dictionary
+            self.function = pL.privmsgcmdTrigger.get(self.command)
+            if self.function != None:
+                self.response = self.function(self.username, channel, message, self.arguments)
+                if self.response != None:
+                    self.say(channel, self.response)
+                    print('{} - flexb0t: {}'.format(channel, self.response))
 
 class flexFactory(protocol.ClientFactory):
     protocol = flexbot
@@ -63,11 +71,11 @@ class flexFactory(protocol.ClientFactory):
 #        return p
 
     def clientConnectionLost(self, connector, reason):
-        print('lost connection (%s)' % reason)
+        print('lost connection ({})'.format(reason))
         connector.connect()
 
     def clientConnectionFailed(self, connector, reason):
-        print('connection failed: %s' % reason)
+        print('connection failed: {}'.format(reason))
         reactor.stop()
 
 
