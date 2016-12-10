@@ -47,7 +47,7 @@ class flexbot(irc.IRCClient):
         if message[0] == '!':
             self.command = message.split(' ')[0]
             self.arguments = message.split(' ')[1:]
-            #retrieve a function from the trigger dictionary
+            #retrieve a function from the trigger dictionary, .get() returns None if key is not found
             self.function = pL.privmsgcmdTrigger.get(self.command)
             if self.function != None:
                 self.response = self.function(self.username, channel, message, self.arguments)
