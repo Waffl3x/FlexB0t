@@ -4,13 +4,12 @@ from twisted.internet import protocol, reactor
 import pluginLoader
 pL = pluginLoader
 
+
 #config
-#investigate use of the with statement when opening files
 
 #add exception for formatting error in configuration file
-
 try:
-    config = open('config.txt', 'r')
+    with open('config.txt', 'r') as config
     for line in config:
         if line[0:7] == 'server~':
             server = line[11:line.rfind('\'')]
@@ -22,7 +21,6 @@ try:
             pword = line[11:line.rfind('\'')]
         elif line[0:7] == 'channel':
             channel = line[11:line.rfind('\'')]
-    config.close()
 except OSError as err:
     print('Error opening configuration file: {}'.format(err))
 except NameError as err:
