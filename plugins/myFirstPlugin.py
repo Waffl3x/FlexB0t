@@ -42,9 +42,12 @@ privmsgcmdTrigger['!gaydar'] = gaydar
 #!startfight fighter1 fighter2
 def startfight(user, channel, message, arguments):
 	encounter = [
-	'{0} knocked {1} on their ass!',
-	'{0} hits {1} right in the face. {1} goes flying!',
-	'{0} blows in {1}\'s general direction. {1} falls over!']
+		'{0} punches {1}, who falls over. {1} now has a sore ass.',
+		'{0} hits {1} right in the face. {1} goes flying!',
+		'{0} hits {1} with a fan. {1} flies a few feet off to the side.',
+		'{0} blows in {1}\'s general direction. {1} falls over!'
+	
+	]
 	target = arguments[0:2]
 	random.shuffle(target)
 	random.shuffle(encounter)
@@ -59,7 +62,7 @@ def fight(user, channel, message, arguments):
 		'{0} hits {1} right in the face. {1} goes flying!',
 		'{0} hits {1} with a fan. {1} flies a few feet off to the side.',
 		'{0} blows in {1}\'s general direction. {1} falls over!'
-
+	
 	]
 	target = [arguments[0], user]
 	random.shuffle(target)
