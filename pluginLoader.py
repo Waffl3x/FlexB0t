@@ -64,10 +64,11 @@ for p in plugName:
             for t in loadedTriggers & plugDict[p].triggerManifest:
                 #iterate from 1 to 10 attempting to rename duplicate command trigger
                 for i in range(1, 10):
+                    #assign modified name to a temporary variable
+                    newTriggerName = t + str(i)
                     #test if new trigger is already in use
-                    if (t + str(i) in loadedTriggers) == False:
+                    if not(newTriggerName in loadedTriggers):
                         #new trigger is not in use, assigning the command function to the new trigger
-                        newTriggerName = t + str(i)
                         tmpDict[newTriggerName] = tmpDict[t]
                         #delete the old trigger key
                         del tmpDict[t]
