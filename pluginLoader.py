@@ -42,10 +42,11 @@ defaultFunctions = len(privmsgcmdTrigger.keys())
 print('\nLoaded {} default functions'.format(defaultFunctions))
 
 #retrieve a list of files in plugin folder and add .py files to the list plugName
-for fn in os.listdir('plugins'):
-    if fn[0:2] != '__':
-        if fn[-3:] == '.py':
-           plugName.append(fn[0:-3])
+plugName = [
+    fn[0:-3] for fn in os.listdir('plugins') 
+    if not fn.startswith('__') and fn.endswith('.py')
+
+]
 
 #import modules in plugins folder, assign them to plugDict dictionary, assign command triggers to privmsgcmdTrigger
 for p in plugName:
