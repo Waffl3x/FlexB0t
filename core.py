@@ -9,18 +9,18 @@ pL = pluginLoader
 
 #add exception for formatting error in configuration file
 try:
-    with open('config.txt', 'r') as config
-    for line in config:
-        if line[0:7] == 'server~':
-            server = line[11:line.rfind('\'')]
-        elif line[0:7] == 'port~~~':
-            port = int(line[11:line.rfind('\'')])
-        elif line[0:7] == 'nick~~~':
-            nick = line[11:line.rfind('\'')]
-        elif line[0:7] == 'pword~~':
-            pword = line[11:line.rfind('\'')]
-        elif line[0:7] == 'channel':
-            channel = line[11:line.rfind('\'')]
+    with open('config.txt', 'r') as config:
+        for line in config:
+            if line[0:7] == 'server~':
+                server = line[11:line.rfind('\'')]
+            elif line[0:7] == 'port~~~':
+                port = int(line[11:line.rfind('\'')])
+            elif line[0:7] == 'nick~~~':
+                nick = line[11:line.rfind('\'')]
+            elif line[0:7] == 'pword~~':
+                pword = line[11:line.rfind('\'')]
+            elif line[0:7] == 'channel':
+                channel = line[11:line.rfind('\'')]
 except OSError as err:
     print('Error opening configuration file: {}'.format(err))
 except NameError as err:

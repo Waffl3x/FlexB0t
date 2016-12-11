@@ -28,7 +28,7 @@ def flameUser(user, channel, message, arguments):
 privmsgcmdTrigger['!flame'] = flameUser
 
 #!gaydar
-#!gayday target
+#!gaydar target
 def gaydar(user, channel, message, arguments):
 	if arguments == []:
 		target = user
@@ -62,7 +62,7 @@ def fight(user, channel, message, arguments):
 		'{0} hits {1} right in the face. {1} goes flying!',
 		'{0} hits {1} with a fan. {1} flies a few feet off to the side.',
 		'{0} blows in {1}\'s general direction. {1} falls over!'
-	
+
 	]
 	target = [arguments[0], user]
 	random.shuffle(target)
