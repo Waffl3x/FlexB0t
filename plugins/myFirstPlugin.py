@@ -23,9 +23,32 @@ def flameUser(user, channel, message, arguments):
 	else:
 		target = arguments[0]
 
-	return '{} is a retard'.format(target)
+	phrase = [
+		'{0} is a retard',
+		'{0} is a potato'
+
+	]
+	random.shuffle(phrase)
+
+	return phrase[0].format(target)
 
 privmsgcmdTrigger['!flame'] = flameUser
+
+#!compliment target
+def compliment(user, channel, message, arguments):
+	target = arguments[0]
+
+	phrase = [
+		'{0} is not a retard',
+		'{0} is not a potato',
+		'{0} is very nice'
+
+	]
+	random.shuffle(phrase)
+
+	return phrase[0].format(target)
+
+privmsgcmdTrigger['!compliment'] = compliment
 
 #!gaydar
 #!gaydar target
@@ -70,13 +93,6 @@ def fight(user, channel, message, arguments):
 	return encounter[0].format(target[0], target[1])
 
 privmsgcmdTrigger['!fight'] = fight
-
-#!compliment target
-def compliment(user, channel, message, arguments):
-	target = arguments[0]
-	return '{} is not a retard'.format(target)
-
-privmsgcmdTrigger['!compliment'] = compliment
 
 
 
