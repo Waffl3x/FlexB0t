@@ -44,7 +44,7 @@ print('\nLoaded {} default functions'.format(defaultFunctions))
 #retrieve a list of files in plugin folder and add .py files to the list plugName
 plugName = [
     fn[0:-3] for fn in os.listdir('plugins') 
-    if not fn.startswith('__') and fn.startswith('off.') and fn.endswith('.py')
+    if not (fn.startswith('__') or fn.startswith('off.')) and fn.endswith('.py')
 
 ]
 
