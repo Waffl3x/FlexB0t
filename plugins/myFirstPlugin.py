@@ -1,19 +1,43 @@
 # coding: UTF-8
 
 import random
-#This will kind of serve as a template for plugin modules
+#add more commenting so this can be used as an example for plugins to be based off
 
-#manifest of amount of functions
-#do this sometime
+#create a dictionary to contain function refrences with a their trigger as a key
+privmsgcmdTrigger = {}
 
-#function trigger dictionary
+#create a dictionary to store the special rules when commands are used by/on users
+riggedUser = {}
+#load rules file into the dictionary
+def reloadUserRules():
+    u"""Reload's the file(s) defining specific user rules
 
+    This will load any changes made to rules configuration since the bot was loaded
+    """
+    with open('plugins\\myFirstPlugin.gaydarInfo.txt', 'r') as f:
+        for line in f:
+            if line.startswith('\n'):
+                break
+            if line.startswith('#'):
+                pass
+            else:
+                spline = line.split('%')
+                a, b, c = spline[1], int(spline[3]), int(spline[5])
+                riggedUser[a] = [b, c]
 
-#privmsg commands require (user, channel, message, arguments) the final parameter is a list
+reloadUserRules()
+
+#fairly temporary reload command
+def forceReload(user, channel, message, arguments):
+    if user == 'waffl3x':
+        reloadUserRules()
+        return 'Reload successful!'
+    else:
+        return 'You do not have permission to use this command.'
+
+privmsgcmdTrigger['!reload'] = forceReload
 
 #exclamation mark triggered privmsg commands
-#function manifest named by function triggers
-privmsgcmdTrigger = {}
 
 #!flame
 #!flame target
@@ -58,7 +82,12 @@ def gaydar(user, channel, message, arguments):
     else:
         target = arguments[0]
 
-    return '{} is {}% KappaPride'.format(target, random.randrange(0,100,1))
+    if target in riggedUser:
+        pcntValue = random.randrange(riggedUser[target][0], riggedUser[target][1])
+    else:
+        pcntValue = random.randrange(0,100,1)
+
+    return '{} is {}% KappaPride'.format(target, pcntValue)
 
 privmsgcmdTrigger['!gaydar'] = gaydar
 
