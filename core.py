@@ -1,12 +1,12 @@
 from twisted.words.protocols import irc
 from twisted.internet import protocol, reactor
+#currently used for fetching viewer lists from https://tmi.twitch.tv/group/user/%channelname%/chatters
+import urllib.request
+import json
 #my plugin loader module
 import pluginLoader
-pL = pluginLoader
-
 
 #config
-
 #add exception for formatting error in configuration file
 try:
     with open('config.txt', 'r') as config:
@@ -27,31 +27,73 @@ except NameError as err:
     print('Configuration file missing: {}'.format(err))
 
 
+
 class flexbot(irc.IRCClient):
 
     nickname = nick
     password = pword
 
+    def __init__(self):
+        self.pluginDict = {}
+        self.liveFunctionDictionary = {}
+        self.liveTriggerManifest = set()
+        self.viewerDict = {}
+
+        pluginLoader.importPlugins(pluginLoader.fetchPlugins(), self.pluginDict)
+
+        for p in self.pluginDict:
+            self.pluginDict[p].plugin(self)
+
+
     def signedOn(self):
         self.join(self.factory.channel)
+
+        self.say(self.factory.channel, 'Hi!')
 
     def joined(self, channel):
         print('joined {}'.format(channel))
 
     def privmsg(self, user, channel, message):
-        self.username = user.split('!', 1)[0]
-        print('{} - {}: {}'.format(channel, self.username, message))
+        username = user.split('!', 1)[0]
+        print('{} - {}: {}'.format(channel, username, message))
 
         if message[0] == '!':
-            self.command = message.split(' ')[0]
-            self.arguments = message.split(' ')[1:]
-            #retrieve a function from the trigger dictionary, .get() returns None if key is not found
-            self.function = pL.privmsgcmdTrigger.get(self.command)
-            if self.function != None:
-                self.response = self.function(self.username, channel, message, self.arguments)
-                if self.response != None:
-                    self.say(channel, self.response)
-                    print('{} - flexb0t: {}'.format(channel, self.response))
+            splitmessage = message.split(' ')
+            command = splitmessage[0][1:]
+            arguments = splitmessage[1:]
+
+            chatCommand = self.liveFunctionDictionary.get(command)
+            if chatCommand != None:
+                chatCommand(username, channel, message, arguments)
+                #remember to add input sanitization
+
+    def fetchViewers(self, channel):
+        req = urllib.request.Request('https://tmi.twitch.tv/group/user/{}/chatters'.format(channel))
+        with urllib.request.urlopen(req) as response:
+            viewersJSON = response.read()
+    
+        viewersUnparsed = json.loads(viewersJSON.decode('utf-8'))
+
+        self.viewerDict['count'] = viewersUnparsed.get('chatter_count')
+        self.viewerDict['staff'] = viewersUnparsed.get('chatters', {}).get('staff', [])
+        self.viewerDict['mods'] = viewersUnparsed.get('chatters', {}).get('moderators', [])
+        self.viewerDict['normal'] = viewersUnparsed.get('chatters', {}).get('viewers', [])
+
+        self.viewerDict['total'] = self.viewerDict['staff'] + self.viewerDict['mods'] + self.viewerDict['normal']
+        #debug, remove later
+        print(self.viewerDict['total'])
+        print(self.viewerDict['count'])
+
+    def loadPlugins(self):
+        """placeholder"""
+        pass
+
+    def registerCommands(self, name, commandDict, triggerMani):
+        print(pluginLoader.importExCommand(name, commandDict, triggerMani, self.liveFunctionDictionary, self.liveTriggerManifest)[3])
+
+    def tempPrint(self, channel, phrase):
+        print('{0} - flexb0t: {1}'.format(channel, phrase))
+
 
 class flexFactory(protocol.ClientFactory):
     protocol = flexbot
