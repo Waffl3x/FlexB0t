@@ -50,3 +50,4 @@ config.txt
 plugins/funclist.py
 plugins/funclist2.py
 *.pyc
+plugins/sheepstickedMemes.py
