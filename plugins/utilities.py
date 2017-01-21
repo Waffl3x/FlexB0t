@@ -17,10 +17,10 @@ class plugin():
         cmdlist = list(self.bot.liveFunctionDictionary.keys())
         cmdlist.sort()
         phrase = 'There are {0} commands loaded: {1}'.format(len(cmdlist), cmdlist)
-        self.bot.say(channel, phrase)
-        self.bot.tempPrint(channel, phrase)
+
+        self.bot.sendMsg(channel, phrase)
 
     def help(self, user, channel, message, arguments):
         phrase = 'Work in progress'
-        self.bot.say(channel, phrase)
-        self.bot.tempPrint(channel, phrase)
+
+        self.bot.sendMsg(channel, phrase)

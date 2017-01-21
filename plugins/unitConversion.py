@@ -1,37 +1,50 @@
-privmsgcmdTrigger = {}
+class plugin():
 
-unitConversion = {}
-unitConversion['feetmeters'] = 0.3048
-unitConversion['metersfeet'] = 3.28
-unitConversion['antiplansalt'] = 1687
+    def __init__(self, bot):
 
-#!convert value startunit convertunit
-def convert(user, channel, message, arguments):
-    value = float(arguments[0])
-    c = unitConversion.get(arguments[1] + arguments[2])
-    if c != None:
-        convertedValue = value * c
-    else:
-        return 'conversion information not found'
-    return '{0} {1} converted to {2} is {3}'.format(arguments[0], arguments[1], arguments[2], round(convertedValue, 2))
+        commands = [
+            self.convert,
+            self.ctof,
+            self.ftoc
 
-privmsgcmdTrigger['!convert'] = convert
+        ]
+        commandDictionary = {func.__name__:func for func in commands}
+        triggerManifest = set(commandDictionary.keys())
 
-#!ctof value
-def ctof(user, channel, message, arguments):
-    value = float(arguments[0])
-    convertedValue = value * 9 / 5 + 32
-    return '{0} Celcius converted to Fahrenheit is {1}'.format(arguments[0], round(convertedValue, 1))
-
-privmsgcmdTrigger['!ctof'] = ctof
-
-#!ftoc value
-def ftoc(user, channel, message, arguments):
-    value = float(arguments[0])
-    convertedValue = (value - 32) * 5 / 9
-    return '{0} Fahrenheit converted to Celcius is {1}'.format(arguments[0], round(convertedValue, 1))
-
-privmsgcmdTrigger['!ftoc'] = ftoc
+        self.bot = bot
+        self.bot.registerCommands('unitConversion', commandDictionary, triggerManifest)
 
 
-triggerManifest = set(privmsgcmdTrigger.keys())
+    def convert(self, user, channel, message, arguments):
+        unitConversion = self.bot.userInfo.get('unitConversion', {}).get('convert', {})
+
+        phrase = '{0} {1} converted to {2} is {3}'
+
+        value = float(arguments[0])
+        c = unitConversion.get(arguments[1] + arguments[2])
+
+        if c != None:
+            convertedValue = value * c
+
+            self.bot.sendMsg(channel, phrase.format(arguments[0], arguments[1], arguments[2], round(convertedValue, 2)))
+
+        else:
+
+            self.bot.sendMsg(channel, 'conversion information not found')
+
+
+    def ctof(self, user, channel, message, arguments):
+        value = float(arguments[0])
+        convertedValue = value * 9 / 5 + 32
+
+        phrase = '{0} Celcius converted to Fahrenheit is {1}'
+
+        self.bot.sendMsg(channel, phrase.format(arguments[0], convertedValue))
+
+    def ftoc(self, user, channel, message, arguments):
+        value = float(arguments[0])
+        convertedValue = (value - 32) * 5 / 9
+
+        phrase = '{0} Fahrenheit converted to Celcius is {1}'
+
+        self.bot.sendMsg(channel, phrase.format(arguments[0], round(convertedValue, 1)))
