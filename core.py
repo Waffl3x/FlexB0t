@@ -39,8 +39,14 @@ class flexbot(irc.IRCClient):
         self.liveTriggerManifest = set()
         self.viewerDict = {}
 
-        pluginLoader.importPlugins(pluginLoader.fetchPlugins(), self.pluginDict)
+        #load user specific command info and permissions json
+        with open('userInfo.json','r') as f:
+            self.userInfo = json.load(f)
+            print(self.userInfo)
 
+        #load plugins
+        pluginLoader.importPlugins(pluginLoader.fetchPlugins(), self.pluginDict)
+        #import commands
         for p in self.pluginDict:
             self.pluginDict[p].plugin(self)
 
@@ -64,8 +70,14 @@ class flexbot(irc.IRCClient):
 
             chatCommand = self.liveFunctionDictionary.get(command)
             if chatCommand != None:
-                chatCommand(username, channel, message, arguments)
-                #remember to add input sanitization
+                if arguments == []:
+                    chatCommand(username, channel, message, arguments)
+                else:
+                    if arguments[0][0] == '!' or arguments[0][0] == '/' or arguments[0][0] == '.':
+                        self.say(channel, 'You\'re actually a retard')
+                    else:
+                        chatCommand(username, channel, message, arguments)
+                        #clean up input sanitization
 
     def fetchViewers(self, channel):
         req = urllib.request.Request('https://tmi.twitch.tv/group/user/{}/chatters'.format(channel))
@@ -91,8 +103,10 @@ class flexbot(irc.IRCClient):
     def registerCommands(self, name, commandDict, triggerMani):
         print(pluginLoader.importExCommand(name, commandDict, triggerMani, self.liveFunctionDictionary, self.liveTriggerManifest)[3])
 
-    def tempPrint(self, channel, phrase):
+    def sendMsg(self, channel, phrase):
+        self.say(channel, phrase)
         print('{0} - flexb0t: {1}'.format(channel, phrase))
+
 
 
 class flexFactory(protocol.ClientFactory):
