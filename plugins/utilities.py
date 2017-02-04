@@ -4,7 +4,8 @@ class plugin():
 
         commands = [
             self.flexcommands,
-            self.help
+            self.help,
+            self.reload
 
         ]
         commandDictionary = {func.__name__:func for func in commands}
@@ -24,3 +25,8 @@ class plugin():
         phrase = 'Work in progress'
 
         self.bot.sendMsg(channel, phrase)
+
+    def reload(self, user, channel, message, arguments):
+        if user.lower() in self.bot.userPower['admin']:
+            self.bot.loadUserInfo()
+            self.bot.sendMsg(channel, 'Reloading')

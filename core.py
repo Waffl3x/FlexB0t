@@ -39,15 +39,9 @@ class flexbot(irc.IRCClient):
         self.liveTriggerManifest = set()
         self.viewerDict = {}
 
-        #load user specific command info and permissions json
-        try:
-            with open('userInfo.json','r') as f:
-                self.userInfo = json.load(f)
-                print(self.userInfo)
-        #no such file userInfo.json...
-        except OSError as err:
-            print('userInfo.json was not found: {0}\n\nCustom parameters and user privledges will not be available.\n'.format(err))
-            self.userInfo = {}
+        #automatically load the userInfo.json and userPrivlege files
+        self.loadUserInfo()
+        self.loadUserPrivilege()
 
         #load plugins
         pluginLoader.importPlugins(pluginLoader.fetchPlugins(), self.pluginDict)
@@ -83,7 +77,7 @@ class flexbot(irc.IRCClient):
                         for a in arguments:
                             if a[0] in ('!', '/', '.'):
                                 print('Caught malicious input')
-                                self.say(channel, 'You\'re actually a retard')
+                                self.say(channel, 'Please don\'t :(')
                                 break
                         else:
                             chatCommand(username, channel, message, arguments)
@@ -116,6 +110,29 @@ class flexbot(irc.IRCClient):
         self.say(channel, phrase)
         print('{0} - flexb0t: {1}'.format(channel, phrase))
 
+    def loadUserInfo(self):
+        """load user specific command info and permissions json"""
+        try:
+            with open('userInfo.json','r') as f:
+                self.userInfo = json.load(f)
+                #debug
+                print(self.userInfo)
+        #no such file userInfo.json...
+        except OSError as err:
+            print('\nuserInfo.json was not found: {0}\n\nCustom parameters will not be available.\n'.format(err))
+            self.userInfo = {}
+
+    def  loadUserPrivilege(self):
+        """load user power levels"""
+        try:
+            with open('userPrivilege.json','r') as f:
+                self.userPower = json.load(f)
+                #debug
+                print(self.userPower)
+        #no such file userInfo.json...
+        except OSError as err:
+            print('\nuserPrivilege.json was not found: {0}\n\nAdded waffl3x to admin user group as default\n'.format(err))
+            self.userPower = {'admin':['waffl3x']}
 
 
 class flexFactory(protocol.ClientFactory):
