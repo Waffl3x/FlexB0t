@@ -45,13 +45,10 @@ $RECYCLE.BIN/
 Network Trash Folder
 Temporary Items
 .apdisk
-checklist.txt
 config.txt
-plugins/funclist.py
-plugins/funclist2.py
 *.pyc
 plugins/sheepstickedMemes.py
-suggestions.txt
 plugins/rollingcowMemes.py
-plugins/test.py
-plugins/test.py
+userInfo.json
+plugins/eosinMemes.py
+docs/checklist.txt
