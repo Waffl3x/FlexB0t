@@ -52,3 +52,5 @@ plugins/funclist2.py
 *.pyc
 plugins/sheepstickedMemes.py
 suggestions.txt
+plugins/rollingcowMemes.py
+plugins/test.py
