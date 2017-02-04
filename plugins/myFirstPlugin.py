@@ -27,7 +27,9 @@ class plugin():
         phrase = [
             '{0} is a retard',
             '{0} is a potato',
-            '{0} is a monkey'
+            '{0} is a monkey',
+            '{0} is a noob',
+            '{0} is a moron'
 
         ]
         random.shuffle(phrase)
