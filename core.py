@@ -40,9 +40,14 @@ class flexbot(irc.IRCClient):
         self.viewerDict = {}
 
         #load user specific command info and permissions json
-        with open('userInfo.json','r') as f:
-            self.userInfo = json.load(f)
-            print(self.userInfo)
+        try:
+            with open('userInfo.json','r') as f:
+                self.userInfo = json.load(f)
+                print(self.userInfo)
+        #no such file userInfo.json...
+        except OSError as err:
+            print('userInfo.json was not found: {0}\n\nCustom parameters and user privledges will not be available.\n'.format(err))
+            self.userInfo = {}
 
         #load plugins
         pluginLoader.importPlugins(pluginLoader.fetchPlugins(), self.pluginDict)
@@ -64,20 +69,24 @@ class flexbot(irc.IRCClient):
         print('{} - {}: {}'.format(channel, username, message))
 
         if message[0] == '!':
-            splitmessage = message.split(' ')
-            command = splitmessage[0][1:]
-            arguments = splitmessage[1:]
+            if not(username in self.userInfo.get('userPrivilege', {}).get('blacklist', [])):
+                splitmessage = message.split(' ')
+                command = splitmessage[0][1:]
+                arguments = splitmessage[1:]
 
-            chatCommand = self.liveFunctionDictionary.get(command)
-            if chatCommand != None:
-                if arguments == []:
-                    chatCommand(username, channel, message, arguments)
-                else:
-                    if arguments[0][0] == '!' or arguments[0][0] == '/' or arguments[0][0] == '.':
-                        self.say(channel, 'You\'re actually a retard')
-                    else:
+                chatCommand = self.liveFunctionDictionary.get(command)
+                if chatCommand != None:
+                    if arguments == []:
                         chatCommand(username, channel, message, arguments)
-                        #clean up input sanitization
+                    else:
+                        #basic input sanitization
+                        for a in arguments:
+                            if a[0] in ('!', '/', '.'):
+                                print('Caught malicious input')
+                                self.say(channel, 'You\'re actually a retard')
+                                break
+                        else:
+                            chatCommand(username, channel, message, arguments)
 
     def fetchViewers(self, channel):
         req = urllib.request.Request('https://tmi.twitch.tv/group/user/{}/chatters'.format(channel))
