@@ -60,12 +60,24 @@ class plugin():
         else:
             target = arguments[0]
 
-        if target in customUser:
-            amount = random.randrange(customUser[target][0], customUser[target][1])
+        targetLow = target.lower()
+
+        if targetLow in customUser:
+            info = customUser[targetLow]
+            #current types are range (R), literal (L), and custom string (S)
+            if info[0] == 'R':
+                amount = random.randrange(info[1], info[2])
+                phrase = '{0} is {1}% KappaPride'.format(target, amount)
+            elif info[0] == 'L':
+                amount = info[1]
+                phrase = '{0} is {1}% KappaPride'.format(target, amount)
+            elif info[0] == 'S':
+                phrase = info[1]
+            else:
+                print('#\nuser info formatted incorrectly: invalid flag at first index of list\n#')
         else:
             amount = random.randrange(0,100,1)
-
-        phrase = '{} is {}% KappaPride'.format(target, amount)
+            phrase = '{0} is {1}% KappaPride'.format(target, amount)
 
         self.bot.sendMsg(channel, phrase)
 
